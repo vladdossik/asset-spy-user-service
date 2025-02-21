@@ -13,7 +13,6 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    unique: true
                     nullable: false
               - column:
                   name: username

@@ -10,9 +10,9 @@ databaseChangeLog:
               - column:
                   name: contact_id
                   type: BIGINT
+                  autoIncrement: true
                   constraints:
                     primaryKey: true
-                    unique: true
                     nullable: false
               - column:
                   name: user_id
@@ -41,3 +41,4 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: id
             onDelete: CASCADE
+            onUpdate: RESTRICT
