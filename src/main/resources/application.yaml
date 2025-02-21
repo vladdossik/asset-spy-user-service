@@ -17,4 +17,6 @@ spring:
         format_sql: true
 
   liquibase:
-    enabled: false
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    default-schema: asset_spy_user_service_db

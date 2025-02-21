@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 21.02.2025_02
+      author: nastasiia227@gmail.com
+      comment: Create contacts table
+      changes:
+        - createTable:
+            tableName: contacts
+            columns:
+              - column:
+                  name: contact_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    unique: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact_value
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority
+                  type: INTEGER
+                  defaultValue: 0
+
+        - addForeignKeyConstraint:
+            baseTableName: contacts
+            baseColumnNames: user_id
+            constraintName: fk_contact_users
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
