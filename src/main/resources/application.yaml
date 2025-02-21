@@ -13,7 +13,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        default_schema: asset_spy_db
+        default_schema: asset_spy_user_service_db
         format_sql: true
 
   liquibase:
