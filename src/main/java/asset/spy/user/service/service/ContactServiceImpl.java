@@ -102,10 +102,6 @@ public class ContactServiceImpl implements ContactService {
     public Page<ContactDTO> getAllContactsForUser(Long userId, Long cursor, int size) {
         log.info("Getting all contacts for user {}", userId);
         Pageable pageable = PageRequest.of(0, size);
-        Page<Contact> contacts = (cursor == null)
-                ? contactRepository.findByUserId(userId, pageable)
-                : contactRepository.findByUserIdAndIdGreaterThan(userId, cursor, pageable);
-
-        return contacts.map(contactMapper::toDto);
+        return contactRepository.findAllContactsForUserAfterCursor(userId, cursor, pageable);
     }
 }

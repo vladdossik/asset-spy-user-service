@@ -15,7 +15,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     @Query("SELECT c FROM Contact c LEFT JOIN FETCH c.user WHERE c.id > :cursor ORDER BY c.id ASC")
     Page<ContactDTO> findAllContactsAfterCursor(@Param("cursor") Long cursor, Pageable pageable);
 
-    Page<Contact> findByUserId(Long userId, Pageable pageable);
-
-    Page<Contact> findByUserIdAndIdGreaterThan(Long userId, Long cursor, Pageable pageable);
+    @Query("SELECT c FROM Contact c LEFT JOIN FETCH c.user WHERE c.user.id = :userId " +
+            "AND c.id > :cursor ORDER BY c.id ASC")
+    Page<ContactDTO> findAllContactsForUserAfterCursor(@Param("userId") Long userId, Long cursor, Pageable pageable);
 }
