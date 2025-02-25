@@ -1,6 +1,6 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.dto.UserDTO;
+import asset.spy.user.service.dto.UserDto;
 import asset.spy.user.service.exception.UserNotFoundException;
 import asset.spy.user.service.mapper.UserMapper;
 import asset.spy.user.service.model.User;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO createUser(UserDTO userDTO) {
+    public UserDto createUser(UserDto userDTO) {
         log.info("Creating user: {}", userDTO);
         User user = userMapper.toEntity(userDTO);
         user.setCreatedAt(Instant.now());
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO getUserById(Long id) {
+    public UserDto getUserById(Long id) {
         log.info("Retrieving user by id: {}", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> {
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
+    public UserDto updateUser(Long id, UserDto userDTO) {
         log.info("Updating user: {}", userDTO);
 
         User existingUser = userRepository.findById(id)
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserDTO> getAllUsers(Long cursor, int size) {
+    public Page<UserDto> getAllUsers(Long cursor, int size) {
         log.info("Retrieving all users");
         Pageable pageable = PageRequest.of(0, size);
         Page<User> userPage = userRepository.findAllUsersAfterCursor(cursor, pageable);

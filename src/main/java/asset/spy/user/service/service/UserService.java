@@ -1,17 +1,17 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.dto.UserDTO;
+import asset.spy.user.service.dto.UserDto;
 import org.springframework.data.domain.Page;
 
 public interface UserService {
 
-    UserDTO createUser(UserDTO userDTO);
+    UserDto createUser(UserDto userDTO);
 
-    UserDTO getUserById(Long id);
+    UserDto getUserById(Long id);
 
-    UserDTO updateUser(Long id, UserDTO userDTO);
+    UserDto updateUser(Long id, UserDto userDTO);
 
     void deleteUser(Long id);
 
-    Page<UserDTO> getAllUsers(Long cursor, int size);
+    Page<UserDto> getAllUsers(Long cursor, int size);
 }

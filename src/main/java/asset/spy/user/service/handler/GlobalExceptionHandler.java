@@ -1,6 +1,6 @@
 package asset.spy.user.service.handler;
 
-import asset.spy.user.service.dto.ValidationErrorDTO;
+import asset.spy.user.service.dto.ValidationErrorDto;
 import asset.spy.user.service.exception.ContactNotFoundException;
 import asset.spy.user.service.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +19,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        List<ValidationErrorDTO> validationErrorDTO = ex.getBindingResult()
+        List<ValidationErrorDto> validationErrorDTO = ex.getBindingResult()
                 .getFieldErrors().stream()
-                .map(error -> new ValidationErrorDTO(error.getField(),
+                .map(error -> new ValidationErrorDto(error.getField(),
                         error.getDefaultMessage(), error.getCode()))
                 .collect(Collectors.toList());
         log.error("Validation errors: {}", validationErrorDTO);

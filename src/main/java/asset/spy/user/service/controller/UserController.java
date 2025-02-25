@@ -1,6 +1,6 @@
 package asset.spy.user.service.controller;
 
-import asset.spy.user.service.dto.UserDTO;
+import asset.spy.user.service.dto.UserDto;
 import asset.spy.user.service.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -29,19 +29,19 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO createUser(@Valid @RequestBody UserDTO userDTO) {
+    public UserDto createUser(@Valid @RequestBody UserDto userDTO) {
         log.info("Creating user: {}", userDTO);
         return userService.createUser(userDTO);
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable Long id) {
+    public UserDto getUserById(@PathVariable Long id) {
         log.info("Retrieving user by id: {}", id);
         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
+    public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDTO) {
         log.info("Updating user: {}", userDTO);
         return userService.updateUser(id, userDTO);
     }
@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserDTO> getAllUsers(@RequestParam(required = false) Long cursor,
+    public Page<UserDto> getAllUsers(@RequestParam(required = false) Long cursor,
                                      @RequestParam(defaultValue = "10") @Min(1) int size) {
         log.info("Retrieving all users: {}", cursor);
         return userService.getAllUsers(cursor, size);

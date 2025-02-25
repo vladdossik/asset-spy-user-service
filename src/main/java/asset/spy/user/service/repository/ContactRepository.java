@@ -1,6 +1,6 @@
 package asset.spy.user.service.repository;
 
-import asset.spy.user.service.dto.ContactDTO;
+import asset.spy.user.service.dto.ContactDto;
 import asset.spy.user.service.model.Contact;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Repository;
 public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     @Query("SELECT c FROM Contact c LEFT JOIN FETCH c.user WHERE c.id > :cursor ORDER BY c.id ASC")
-    Page<ContactDTO> findAllContactsAfterCursor(@Param("cursor") Long cursor, Pageable pageable);
+    Page<ContactDto> findAllContactsAfterCursor(@Param("cursor") Long cursor, Pageable pageable);
 
     @Query("SELECT c FROM Contact c LEFT JOIN FETCH c.user WHERE c.user.id = :userId " +
             "AND c.id > :cursor ORDER BY c.id ASC")
-    Page<ContactDTO> findAllContactsForUserAfterCursor(@Param("userId") Long userId, Long cursor, Pageable pageable);
+    Page<ContactDto> findAllContactsForUserAfterCursor(@Param("userId") Long userId, Long cursor, Pageable pageable);
 }

@@ -1,19 +1,19 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.dto.ContactDTO;
+import asset.spy.user.service.dto.ContactDto;
 import org.springframework.data.domain.Page;
 
 public interface ContactService {
 
-    ContactDTO createContact(ContactDTO contactDTO);
+    ContactDto createContact(ContactDto contactDTO);
 
-    ContactDTO getContactById(long id);
+    ContactDto getContactById(long id);
 
-    ContactDTO updateContact(Long id, ContactDTO contactDTO);
+    ContactDto updateContact(Long id, ContactDto contactDTO);
 
     void deleteContact(Long id);
 
-    Page<ContactDTO> getAllContacts(Long cursor, int size);
+    Page<ContactDto> getAllContacts(Long cursor, int size);
 
-    Page<ContactDTO> getAllContactsForUser(Long userId, Long cursor, int size);
+    Page<ContactDto> getAllContactsForUser(Long userId, Long cursor, int size);
 }

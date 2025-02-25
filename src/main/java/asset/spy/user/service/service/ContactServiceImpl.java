@@ -1,6 +1,6 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.dto.ContactDTO;
+import asset.spy.user.service.dto.ContactDto;
 import asset.spy.user.service.exception.ContactNotFoundException;
 import asset.spy.user.service.exception.UserNotFoundException;
 import asset.spy.user.service.mapper.ContactMapper;
@@ -26,7 +26,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public ContactDTO createContact(ContactDTO contactDTO) {
+    public ContactDto createContact(ContactDto contactDTO) {
         log.info("Creating contact {}", contactDTO);
         User user = userRepository.findById(contactDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(contactDTO.getUserId()));
@@ -39,7 +39,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public ContactDTO getContactById(long id) {
+    public ContactDto getContactById(long id) {
         log.info("Getting contact {}", id);
         Contact contact = contactRepository.findById(id)
                 .orElseThrow(() -> {
@@ -51,7 +51,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public ContactDTO updateContact(Long id, ContactDTO contactDTO) {
+    public ContactDto updateContact(Long id, ContactDto contactDTO) {
         log.info("Updating contact {}", id);
 
         Contact existingContact = contactRepository.findById(id)
@@ -91,7 +91,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ContactDTO> getAllContacts(Long cursor, int size) {
+    public Page<ContactDto> getAllContacts(Long cursor, int size) {
         log.info("Getting all contacts");
         Pageable pageable = PageRequest.of(0, size);
         return contactRepository.findAllContactsAfterCursor(cursor, pageable);
@@ -99,7 +99,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ContactDTO> getAllContactsForUser(Long userId, Long cursor, int size) {
+    public Page<ContactDto> getAllContactsForUser(Long userId, Long cursor, int size) {
         log.info("Getting all contacts for user {}", userId);
         Pageable pageable = PageRequest.of(0, size);
         return contactRepository.findAllContactsForUserAfterCursor(userId, cursor, pageable);
