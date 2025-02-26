@@ -1,6 +1,8 @@
 package asset.spy.user.service.controller;
 
-import asset.spy.user.service.dto.UserDto;
+import asset.spy.user.service.dto.user.UserCreateDto;
+import asset.spy.user.service.dto.user.UserResponseDto;
+import asset.spy.user.service.dto.user.UserUpdateDto;
 import asset.spy.user.service.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/v1/users")
 @Slf4j
 public class UserController {
 
@@ -29,34 +31,33 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@Valid @RequestBody UserDto userDTO) {
-        log.info("Creating user: {}", userDTO);
-        return userService.createUser(userDTO);
+    public UserResponseDto createUser(@Valid @RequestBody UserCreateDto userCreateDto) {
+        return userService.createUser(userCreateDto);
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Long id) {
-        log.info("Retrieving user by id: {}", id);
+    public UserResponseDto getUserById(@PathVariable Long id) {
+
         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDTO) {
-        log.info("Updating user: {}", userDTO);
-        return userService.updateUser(id, userDTO);
+    public UserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        return userService.updateUser(id, userUpdateDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) {
-        log.info("Deleting user: {}", id);
         userService.deleteUser(id);
     }
 
     @GetMapping
-    public Page<UserDto> getAllUsers(@RequestParam(required = false) Long cursor,
-                                     @RequestParam(defaultValue = "10") @Min(1) int size) {
-        log.info("Retrieving all users: {}", cursor);
-        return userService.getAllUsers(cursor, size);
+    public Page<UserResponseDto> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
+        return userService.getAllUsers(page, size, sortField, sortDirection);
     }
 }

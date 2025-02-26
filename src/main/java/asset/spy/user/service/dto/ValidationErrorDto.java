@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class ValidationErrorDto {
     private String field;
     private String message;
-    private String code;
+    private String statusCode;
 }

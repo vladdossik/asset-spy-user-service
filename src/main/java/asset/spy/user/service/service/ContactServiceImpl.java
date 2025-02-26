@@ -1,6 +1,8 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.dto.ContactDto;
+import asset.spy.user.service.dto.contact.ContactCreateDto;
+import asset.spy.user.service.dto.contact.ContactResponseDto;
+import asset.spy.user.service.dto.contact.ContactUpdateDto;
 import asset.spy.user.service.exception.ContactNotFoundException;
 import asset.spy.user.service.exception.UserNotFoundException;
 import asset.spy.user.service.mapper.ContactMapper;
@@ -13,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +28,25 @@ public class ContactServiceImpl implements ContactService {
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final ContactMapper contactMapper;
+    private static final List<String> ALLOWED_CONTACT_SORT_FIELDS = List.of(
+            "id",
+            "contactType",
+            "priority",
+            "user.id");
+
+    @Transactional
+    public Contact getContactOrThrow(Long id) {
+        return contactRepository.findById(id)
+                .orElseThrow(() -> new ContactNotFoundException("This contact does not exist"));
+    }
 
     @Override
     @Transactional
-    public ContactDto createContact(ContactDto contactDTO) {
-        log.info("Creating contact {}", contactDTO);
-        User user = userRepository.findById(contactDTO.getUserId())
-                .orElseThrow(() -> new UserNotFoundException(contactDTO.getUserId()));
-        Contact contact = contactMapper.toEntity(contactDTO);
+    public ContactResponseDto createContact(ContactCreateDto contactCreateDto, Long userId) {
+        log.info("Creating contact {}", contactCreateDto);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User does not exist"));
+        Contact contact = contactMapper.toEntity(contactCreateDto, userId);
         contact.setUser(user);
         Contact savedContact = contactRepository.save(contact);
         log.info("Contact created {}", savedContact);
@@ -39,40 +55,20 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public ContactDto getContactById(long id) {
+    public ContactResponseDto getContactById(long id) {
         log.info("Getting contact {}", id);
-        Contact contact = contactRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Contact {} not found", id);
-                    return new ContactNotFoundException(id);
-                });
+        Contact contact = getContactOrThrow(id);
         return contactMapper.toDto(contact);
     }
 
     @Override
     @Transactional
-    public ContactDto updateContact(Long id, ContactDto contactDTO) {
+    public ContactResponseDto updateContact(Long id, ContactUpdateDto contactUpdateDto) {
         log.info("Updating contact {}", id);
-
-        Contact existingContact = contactRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Contact {} not found", id);
-                    return new ContactNotFoundException(id);
-                });
-        User user = userRepository.findById(contactDTO.getUserId())
-                .orElseThrow(() -> {
-                    log.warn("User {} not found", contactDTO.getUserId());
-                    return new UserNotFoundException(contactDTO.getUserId());
-                });
-
-        existingContact.setUser(user);
-        existingContact.setContactType(contactDTO.getContactType());
-        existingContact.setContactValue(contactDTO.getContactValue());
-        existingContact.setPriority(contactDTO.getPriority());
-
+        Contact existingContact = getContactOrThrow(id);
+        contactMapper.updateContactFromDto(contactUpdateDto, existingContact);
         Contact updatedContact = contactRepository.save(existingContact);
         log.info("Contact updated {}", updatedContact);
-
         return contactMapper.toDto(updatedContact);
     }
 
@@ -80,28 +76,38 @@ public class ContactServiceImpl implements ContactService {
     @Transactional
     public void deleteContact(Long id) {
         log.info("Deleting contact {}", id);
-        Contact contact = contactRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Contact {} not found", id);
-                    return new ContactNotFoundException(id);
-                });
+        Contact contact = getContactOrThrow(id);
         contactRepository.delete(contact);
         log.info("Contact deleted {}", contact);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ContactDto> getAllContacts(Long cursor, int size) {
+    public Page<ContactResponseDto> getAllContacts(int page, int size, String sortField, String sortDirectionStr,
+                                                   String contactType, Long userId, Integer priority) {
         log.info("Getting all contacts");
-        Pageable pageable = PageRequest.of(0, size);
-        return contactRepository.findAllContactsAfterCursor(cursor, pageable);
-    }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ContactDto> getAllContactsForUser(Long userId, Long cursor, int size) {
-        log.info("Getting all contacts for user {}", userId);
-        Pageable pageable = PageRequest.of(0, size);
-        return contactRepository.findAllContactsForUserAfterCursor(userId, cursor, pageable);
+        if (!ALLOWED_CONTACT_SORT_FIELDS.contains(sortField)) {
+            throw new IllegalArgumentException("Invalid sort field " + sortField + "Allowed fields are " + ALLOWED_CONTACT_SORT_FIELDS);
+        }
+
+        Sort.Direction sortDirection;
+        try {
+            sortDirection = Sort.Direction.fromString(sortDirectionStr);
+        } catch (IllegalArgumentException e) {
+            log.error("Error parsing sort direction {}", sortDirectionStr);
+            throw new IllegalArgumentException("Invalid sort direction " + e.getMessage());
+        }
+
+        Sort sort = Sort.by(sortDirection, sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Contact> contactPage = contactRepository.findAllWithOptionalFilters(
+                contactType,
+                userId,
+                priority,
+                pageable
+        );
+        return contactPage.map(contactMapper::toDto);
     }
 }

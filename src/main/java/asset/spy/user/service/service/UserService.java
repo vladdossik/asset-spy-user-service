@@ -1,17 +1,19 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.dto.UserDto;
+import asset.spy.user.service.dto.user.UserCreateDto;
+import asset.spy.user.service.dto.user.UserResponseDto;
+import asset.spy.user.service.dto.user.UserUpdateDto;
 import org.springframework.data.domain.Page;
 
 public interface UserService {
 
-    UserDto createUser(UserDto userDTO);
+    UserResponseDto createUser(UserCreateDto userCreateDto);
 
-    UserDto getUserById(Long id);
+    UserResponseDto getUserById(Long id);
 
-    UserDto updateUser(Long id, UserDto userDTO);
+    UserResponseDto updateUser(Long id, UserUpdateDto userUpdateDto);
 
     void deleteUser(Long id);
 
-    Page<UserDto> getAllUsers(Long cursor, int size);
+    Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection);
 }

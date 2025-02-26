@@ -1,6 +1,8 @@
 package asset.spy.user.service.controller;
 
-import asset.spy.user.service.dto.ContactDto;
+import asset.spy.user.service.dto.contact.ContactCreateDto;
+import asset.spy.user.service.dto.contact.ContactResponseDto;
+import asset.spy.user.service.dto.contact.ContactUpdateDto;
 import asset.spy.user.service.service.ContactService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -22,49 +24,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/contacts")
+@RequestMapping("/v1/contacts")
 public class ContactController {
 
     private final ContactService contactService;
 
-    @PostMapping
+    @PostMapping("/save/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ContactDto createContact(@Valid final ContactDto contactDTO) {
-        log.info("Create contact: {}", contactDTO);
-        return contactService.createContact(contactDTO);
+    public ContactResponseDto createContact(@PathVariable Long userId,
+                                            @Valid @RequestBody ContactCreateDto contactCreateDto) {
+        return contactService.createContact(contactCreateDto, userId);
     }
 
     @GetMapping("/{id}")
-    public ContactDto getContactById(final Long id) {
-        log.info("Get contact by id: {}", id);
+    public ContactResponseDto getContactById(final Long id) {
         return contactService.getContactById(id);
     }
 
     @PutMapping("/{id}")
-    public ContactDto updateContact(@PathVariable Long id, @Valid @RequestBody ContactDto contactDTO) {
-        log.info("Update contact: {}", contactDTO);
-        return contactService.updateContact(id, contactDTO);
+    public ContactResponseDto updateContact(@PathVariable Long id, @Valid @RequestBody ContactUpdateDto contactUpdateDto) {
+        return contactService.updateContact(id, contactUpdateDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteContact(@PathVariable Long id) {
-        log.info("Delete contact: {}", id);
         contactService.deleteContact(id);
     }
 
     @GetMapping
-    public Page<ContactDto> getAllContacts(@RequestParam(required = false) Long cursor,
-                                           @RequestParam(defaultValue = "10") @Min(1) int size) {
-        log.info("Get all contacts: {}", cursor);
-        return contactService.getAllContacts(cursor, size);
-    }
-
-    @GetMapping("/{userId}/contacts")
-    public Page<ContactDto> getAllContactsForUser(@PathVariable Long userId,
-                                                  @RequestParam(required = false) Long cursor,
-                                                  @RequestParam(defaultValue = "10") int size) {
-        log.info("Get all contacts for user: {}", userId);
-        return contactService.getAllContactsForUser(userId, cursor, size);
+    public Page<ContactResponseDto> getAllContacts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(defaultValue = "ASC") String sortDirection,
+            @RequestParam(required = false) String contactType,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Integer priority) {
+        return contactService.getAllContacts(page, size, sortField, sortDirection, contactType, userId, priority);
     }
 }

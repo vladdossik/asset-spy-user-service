@@ -9,10 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "contacts")
 public class Contact {
 
@@ -32,5 +36,5 @@ public class Contact {
     private String contactValue;
 
     @Column(name = "priority")
-    private int priority = 0;
+    private Integer priority = 0;
 }
