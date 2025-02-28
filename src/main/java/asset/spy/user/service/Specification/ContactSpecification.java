@@ -30,7 +30,7 @@ public class ContactSpecification {
     }
 
     public static Specification<Contact> hasUserId(Long userId) {
-        return (root, query, cb) ->  {
+        return (root, query, cb) -> {
             if (userId == null) {
                 return null;
             }
@@ -39,7 +39,7 @@ public class ContactSpecification {
         };
     }
 
-    public static Specification<Contact> hasPriority (Integer priority) {
+    public static Specification<Contact> hasPriority(Integer priority) {
         return (root, query, cb) -> {
             if (priority == null) {
                 return null;
@@ -48,7 +48,11 @@ public class ContactSpecification {
         };
     }
 
-    public static Specification<Contact> withFilters(String contactType, String contactValue, Long userId, Integer priority) {
-        return Specification.where(hasContactType(contactType).and(hasContactValue(contactValue)).and(hasUserId(userId).and(hasPriority(priority))));
+    public static Specification<Contact> initSpecificationWithFilters(String contactType, String contactValue,
+                                                                      Long userId, Integer priority) {
+        return Specification.where(hasContactType(contactType)
+                .and(hasContactValue(contactValue))
+                .and(hasUserId(userId))
+                .and(hasPriority(priority)));
     }
 }

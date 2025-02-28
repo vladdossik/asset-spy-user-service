@@ -37,7 +37,6 @@ public class ContactServiceImpl implements ContactService {
     private final UserRepository userRepository;
     private final ContactMapper contactMapper;
 
-
     @Override
     @Transactional
     public ContactResponseDto createContact(ContactCreateDto contactCreateDto, Long userId) {
@@ -81,17 +80,20 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional(readOnly = true)
     public Page<ContactResponseDto> getAllContacts(int page, int size, String sortField, String sortDirection,
-                                                   String contactType, String contactValue, Long userId, Integer priority) {
+                                                   String contactType, String contactValue,
+                                                   Long userId, Integer priority) {
         log.info("Getting all contacts");
 
         if (!ALLOWED_CONTACT_SORT_FIELDS.contains(sortField)) {
-            throw new IllegalArgumentException("Invalid sort field " + sortField + "Allowed fields are " + ALLOWED_CONTACT_SORT_FIELDS);
+            throw new IllegalArgumentException("Invalid sort field " + sortField +
+                    "Allowed fields are " + ALLOWED_CONTACT_SORT_FIELDS);
         }
 
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Specification<Contact> specification = ContactSpecification.withFilters(contactType, contactValue, userId, priority);
+        Specification<Contact> specification = ContactSpecification.initSpecificationWithFilters(contactType,
+                contactValue, userId, priority);
         Page<Contact> contactPage = contactRepository.findAll(specification, pageable);
         return contactPage.map(contactMapper::toDto);
     }

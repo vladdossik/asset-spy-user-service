@@ -17,5 +17,6 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection, String username, String description, OffsetDateTime createdAt);
+    Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection, String username,
+                                      String description, OffsetDateTime createdAt);
 }

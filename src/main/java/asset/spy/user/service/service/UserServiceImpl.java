@@ -78,8 +78,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection, String username, String description, OffsetDateTime createdAt) {
-        log.info("Retrieving all users: page: {}, size: {}, sortField: {}, sortDirection: {}", page, size, sortField, sortDirection);
+    public Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection,
+                                             String username, String description, OffsetDateTime createdAt) {
+        log.info("Retrieving all users: page: {}, size: {}, sortField: {}, sortDirection: {}",
+                page, size, sortField, sortDirection);
 
         if (!ALLOWED_USER_SORT_FIELDS.contains(sortField)) {
             log.error("Invalid sort field: {}", sortField);
@@ -89,7 +91,8 @@ public class UserServiceImpl implements UserService {
 
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection.toUpperCase()), sortField);
         Pageable pageable = PageRequest.of(page, size, sort);
-        Specification<User> specification = UserSpecification.withFilters(username, description, createdAt);
+        Specification<User> specification = UserSpecification.initSpecificationWithFilters(username,
+                description, createdAt);
         Page<User> userPage = userRepository.findAll(specification, pageable);
         return userPage.map(userMapper::toDto);
     }

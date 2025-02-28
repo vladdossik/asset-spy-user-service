@@ -35,7 +35,8 @@ public class UserSpecification {
         };
     }
 
-    public static Specification<User> withFilters(String username, String description, OffsetDateTime createdAt) {
+    public static Specification<User> initSpecificationWithFilters(String username, String description,
+                                                                   OffsetDateTime createdAt) {
         return Specification.where(hasUsername(username).and(hasDescription(description)).and(hasCreatedAt(createdAt)));
     }
 }

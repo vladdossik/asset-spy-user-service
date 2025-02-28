@@ -42,7 +42,8 @@ public class ContactController {
     }
 
     @PutMapping("/{id}")
-    public ContactResponseDto updateContact(@PathVariable Long id, @Valid @RequestBody ContactUpdateDto contactUpdateDto) {
+    public ContactResponseDto updateContact(@PathVariable Long id,
+                                            @Valid @RequestBody ContactUpdateDto contactUpdateDto) {
         return contactService.updateContact(id, contactUpdateDto);
     }
 
@@ -62,6 +63,7 @@ public class ContactController {
             @RequestParam(required = false) String contactValue,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Integer priority) {
-        return contactService.getAllContacts(page, size, sortField, sortDirection, contactType, contactValue, userId, priority);
+        return contactService.getAllContacts(page, size, sortField, sortDirection,
+                contactType, contactValue, userId, priority);
     }
 }
