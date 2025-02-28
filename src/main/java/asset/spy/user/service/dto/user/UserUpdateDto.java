@@ -1,5 +1,6 @@
 package asset.spy.user.service.dto.user;
 
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class UserUpdateDto {
     @Size(max = 200, message = "Description must be up to 200 characters")
     private String description;
 
+    @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 }

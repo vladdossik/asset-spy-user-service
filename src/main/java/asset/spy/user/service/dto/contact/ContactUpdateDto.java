@@ -14,5 +14,5 @@ public class ContactUpdateDto {
     @Size(min = 2, max = 100)
     private String contactValue;
     @Min(0)
-    private int priority;
+    private Integer priority;
 }

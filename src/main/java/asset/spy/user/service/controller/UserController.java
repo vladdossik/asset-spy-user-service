@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.OffsetDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/users")
@@ -57,7 +59,10 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
             @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "ASC") String sortDirection) {
-        return userService.getAllUsers(page, size, sortField, sortDirection);
+            @RequestParam(defaultValue = "ASC") String sortDirection,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) OffsetDateTime createdAt) {
+        return userService.getAllUsers(page, size, sortField, sortDirection, username, description, createdAt);
     }
 }

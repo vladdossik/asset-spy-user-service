@@ -37,7 +37,7 @@ public class ContactController {
     }
 
     @GetMapping("/{id}")
-    public ContactResponseDto getContactById(Long id) {
+    public ContactResponseDto getContactById(@PathVariable Long id) {
         return contactService.getContactById(id);
     }
 
@@ -59,8 +59,9 @@ public class ContactController {
             @RequestParam(defaultValue = "id") String sortField,
             @RequestParam(defaultValue = "ASC") String sortDirection,
             @RequestParam(required = false) String contactType,
+            @RequestParam(required = false) String contactValue,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Integer priority) {
-        return contactService.getAllContacts(page, size, sortField, sortDirection, contactType, userId, priority);
+        return contactService.getAllContacts(page, size, sortField, sortDirection, contactType, contactValue, userId, priority);
     }
 }

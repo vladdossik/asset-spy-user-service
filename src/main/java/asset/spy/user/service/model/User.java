@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Past;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,9 +32,10 @@ public class User {
     @Column(name = "username", nullable = false, length = 50, unique = true)
     private String username;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 200)
     private String description;
 
+    @Past
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 

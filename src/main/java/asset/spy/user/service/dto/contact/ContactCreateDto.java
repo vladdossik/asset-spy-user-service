@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class ContactCreateDto {
+
     @NotBlank(message = "Contact type cannot be blank")
     @Size(min = 2, max = 50)
     private String contactType;

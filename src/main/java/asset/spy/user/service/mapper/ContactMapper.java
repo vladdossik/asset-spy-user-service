@@ -7,14 +7,12 @@ import asset.spy.user.service.model.Contact;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface ContactMapper {
 
-    @Mapping(target = "user.id", ignore = true)
-    @Mapping(target = "user", expression = "java(createUser(userId))")
-    Contact toEntity(ContactCreateDto contactCreateDto, Long userId);
+    @Mapping(target = "user", ignore = true)
+    Contact toEntity(ContactCreateDto contactCreateDto);
 
     @Mapping(source = "user.id", target = "userId")
     ContactResponseDto toDto(Contact contact);

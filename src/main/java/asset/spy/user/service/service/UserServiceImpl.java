@@ -1,5 +1,6 @@
 package asset.spy.user.service.service;
 
+import asset.spy.user.service.Specification.UserSpecification;
 import asset.spy.user.service.dto.user.UserCreateDto;
 import asset.spy.user.service.dto.user.UserResponseDto;
 import asset.spy.user.service.dto.user.UserUpdateDto;
@@ -10,46 +11,41 @@ import asset.spy.user.service.model.User;
 import asset.spy.user.service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private static final List<String> ALLOWED_USER_SORT_FIELDS = List.of("id",
             "username",
             "createdAt",
-            "updatedAt",
             "dateOfBirth");
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    @Transactional
-    public User getUserOrThrow(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
-    }
 
     @Override
     @Transactional
     public UserResponseDto createUser(UserCreateDto userCreateDto) {
         log.info("Creating user: {}", userCreateDto);
-        if (userRepository.existsByUsername(userCreateDto.getUsername())) {
-            throw new UserAlreadyExistsException("User with username " + userCreateDto.getUsername() +
-                    " already exists");
+        try {
+            User user = userMapper.toEntity(userCreateDto);
+            user = userRepository.save(user);
+            return userMapper.toDto(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyExistsException("User with username" + userCreateDto.getUsername() + "already exists");
         }
-
-        User user = userMapper.toEntity(userCreateDto);
-        user = userRepository.save(user);
-        log.info("Created user: {}", user);
-        return userMapper.toDto(user);
     }
 
     @Override
@@ -82,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection) {
+    public Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection, String username, String description, OffsetDateTime createdAt) {
         log.info("Retrieving all users: page: {}, size: {}, sortField: {}, sortDirection: {}", page, size, sortField, sortDirection);
 
         if (!ALLOWED_USER_SORT_FIELDS.contains(sortField)) {
@@ -91,9 +87,15 @@ public class UserServiceImpl implements UserService {
                     "Allowed values are: " + ALLOWED_USER_SORT_FIELDS);
         }
 
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection.toUpperCase()), sortField);
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<User> userPage = userRepository.findAll(pageable);
+        Specification<User> specification = UserSpecification.withFilters(username, description, createdAt);
+        Page<User> userPage = userRepository.findAll(specification, pageable);
         return userPage.map(userMapper::toDto);
+    }
+
+    private User getUserOrThrow(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 }

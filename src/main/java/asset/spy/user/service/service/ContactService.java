@@ -16,6 +16,6 @@ public interface ContactService {
     void deleteContact(Long id);
 
     Page<ContactResponseDto> getAllContacts(int page, int size, String sortField, String sortDirection,
-                                            String contactType, Long userId, Integer priority);
+                                            String contactType, String contactValue, Long userId, Integer priority);
 
 }

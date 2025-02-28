@@ -8,5 +8,5 @@ public class ContactResponseDto {
     private Long userId;
     private String contactType;
     private String contactValue;
-    private int priority;
+    private Integer priority;
 }
