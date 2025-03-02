@@ -1,6 +1,5 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.Specification.UserSpecification;
 import asset.spy.user.service.dto.user.UserCreateDto;
 import asset.spy.user.service.dto.user.UserResponseDto;
 import asset.spy.user.service.dto.user.UserUpdateDto;
@@ -9,13 +8,13 @@ import asset.spy.user.service.exception.UserNotFoundException;
 import asset.spy.user.service.mapper.UserMapper;
 import asset.spy.user.service.model.User;
 import asset.spy.user.service.repository.UserRepository;
+import asset.spy.user.service.specification.UserSpecification;
+import asset.spy.user.service.util.SortingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +26,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private static final List<String> ALLOWED_USER_SORT_FIELDS = List.of("id",
+    public static final List<String> ALLOWED_USER_SORT_FIELDS = List.of("id",
             "username",
             "createdAt",
             "dateOfBirth");
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
 
     @Override
     @Transactional
@@ -78,21 +76,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponseDto> getAllUsers(int page, int size, String sortField, String sortDirection,
-                                             String username, String description, OffsetDateTime createdAt) {
-        log.info("Retrieving all users: page: {}, size: {}, sortField: {}, sortDirection: {}",
-                page, size, sortField, sortDirection);
+    public Page<UserResponseDto> getAllUsers(Pageable pageable,
+                                             String username, String description, OffsetDateTime fromDate, OffsetDateTime toDate) {
+        log.info("Retrieving all users: {}", username);
 
-        if (!ALLOWED_USER_SORT_FIELDS.contains(sortField)) {
-            log.error("Invalid sort field: {}", sortField);
-            throw new IllegalArgumentException("Invalid sort field: " + sortField +
-                    "Allowed values are: " + ALLOWED_USER_SORT_FIELDS);
-        }
+        SortingUtil.validateSortField(pageable, ALLOWED_USER_SORT_FIELDS);
 
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection.toUpperCase()), sortField);
-        Pageable pageable = PageRequest.of(page, size, sort);
         Specification<User> specification = UserSpecification.initSpecificationWithFilters(username,
-                description, createdAt);
+                description, fromDate, toDate);
         Page<User> userPage = userRepository.findAll(specification, pageable);
         return userPage.map(userMapper::toDto);
     }

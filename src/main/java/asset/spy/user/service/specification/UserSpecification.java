@@ -1,4 +1,4 @@
-package asset.spy.user.service.Specification;
+package asset.spy.user.service.specification;
 
 import asset.spy.user.service.model.User;
 import org.apache.commons.lang3.StringUtils;
@@ -26,17 +26,26 @@ public class UserSpecification {
         };
     }
 
-    public static Specification<User> hasCreatedAt(OffsetDateTime createdAt) {
+    public static Specification<User> hasCreatedAtBetween(OffsetDateTime fromDate, OffsetDateTime toDate) {
         return (root, query, cb) -> {
-            if (createdAt == null) {
+            if (fromDate == null && toDate == null) {
                 return null;
             }
-            return cb.equal(root.get("createdAt"), createdAt);
+
+            if (fromDate != null && toDate != null) {
+                return cb.between(root.get("createdAt"), fromDate, toDate);
+            } else if (fromDate != null) {
+                return cb.greaterThanOrEqualTo(root.get("createdAt"), fromDate);
+            } else {
+                return cb.lessThan(root.get("createdAt"), toDate);
+            }
         };
     }
 
     public static Specification<User> initSpecificationWithFilters(String username, String description,
-                                                                   OffsetDateTime createdAt) {
-        return Specification.where(hasUsername(username).and(hasDescription(description)).and(hasCreatedAt(createdAt)));
+                                                                   OffsetDateTime fromDate, OffsetDateTime toDate) {
+        return Specification.where(hasUsername(username)
+                .and(hasDescription(description))
+                .and(hasCreatedAtBetween(fromDate, toDate)));
     }
 }

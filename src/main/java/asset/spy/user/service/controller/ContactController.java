@@ -5,10 +5,10 @@ import asset.spy.user.service.dto.contact.ContactResponseDto;
 import asset.spy.user.service.dto.contact.ContactUpdateDto;
 import asset.spy.user.service.service.ContactService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,16 +54,12 @@ public class ContactController {
     }
 
     @GetMapping
-    public Page<ContactResponseDto> getAllContacts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size,
-            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "ASC") String sortDirection,
-            @RequestParam(required = false) String contactType,
-            @RequestParam(required = false) String contactValue,
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Integer priority) {
-        return contactService.getAllContacts(page, size, sortField, sortDirection,
+    public Page<ContactResponseDto> getAllContacts(Pageable pageable,
+                                                   @RequestParam(required = false) String contactType,
+                                                   @RequestParam(required = false) String contactValue,
+                                                   @RequestParam(required = false) Long userId,
+                                                   @RequestParam(required = false) Integer priority) {
+        return contactService.getAllContacts(pageable,
                 contactType, contactValue, userId, priority);
     }
 }

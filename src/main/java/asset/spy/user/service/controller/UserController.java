@@ -5,10 +5,10 @@ import asset.spy.user.service.dto.user.UserResponseDto;
 import asset.spy.user.service.dto.user.UserUpdateDto;
 import asset.spy.user.service.service.UserService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,14 +55,11 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserResponseDto> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size,
-            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "ASC") String sortDirection,
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String description,
-            @RequestParam(required = false) OffsetDateTime createdAt) {
-        return userService.getAllUsers(page, size, sortField, sortDirection, username, description, createdAt);
+    public Page<UserResponseDto> getAllUsers(Pageable pageable,
+                                             @RequestParam(required = false) String username,
+                                             @RequestParam(required = false) String description,
+                                             @RequestParam(required = false) OffsetDateTime dateFrom,
+                                             @RequestParam(required = false) OffsetDateTime dateTo) {
+        return userService.getAllUsers(pageable, username, description, dateFrom, dateTo);
     }
 }

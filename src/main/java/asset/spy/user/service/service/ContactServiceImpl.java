@@ -1,6 +1,5 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.Specification.ContactSpecification;
 import asset.spy.user.service.dto.contact.ContactCreateDto;
 import asset.spy.user.service.dto.contact.ContactResponseDto;
 import asset.spy.user.service.dto.contact.ContactUpdateDto;
@@ -11,12 +10,12 @@ import asset.spy.user.service.model.Contact;
 import asset.spy.user.service.model.User;
 import asset.spy.user.service.repository.ContactRepository;
 import asset.spy.user.service.repository.UserRepository;
+import asset.spy.user.service.specification.ContactSpecification;
+import asset.spy.user.service.util.SortingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,18 +78,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ContactResponseDto> getAllContacts(int page, int size, String sortField, String sortDirection,
+    public Page<ContactResponseDto> getAllContacts(Pageable pageable,
                                                    String contactType, String contactValue,
                                                    Long userId, Integer priority) {
         log.info("Getting all contacts");
-
-        if (!ALLOWED_CONTACT_SORT_FIELDS.contains(sortField)) {
-            throw new IllegalArgumentException("Invalid sort field " + sortField +
-                    "Allowed fields are " + ALLOWED_CONTACT_SORT_FIELDS);
-        }
-
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
-        Pageable pageable = PageRequest.of(page, size, sort);
+        SortingUtil.validateSortField(pageable, ALLOWED_CONTACT_SORT_FIELDS);
 
         Specification<Contact> specification = ContactSpecification.initSpecificationWithFilters(contactType,
                 contactValue, userId, priority);

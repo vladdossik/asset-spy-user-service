@@ -1,4 +1,4 @@
-package asset.spy.user.service.Specification;
+package asset.spy.user.service.specification;
 
 import asset.spy.user.service.model.Contact;
 import asset.spy.user.service.model.User;

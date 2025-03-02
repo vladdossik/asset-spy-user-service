@@ -4,6 +4,7 @@ import asset.spy.user.service.dto.contact.ContactCreateDto;
 import asset.spy.user.service.dto.contact.ContactResponseDto;
 import asset.spy.user.service.dto.contact.ContactUpdateDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ContactService {
 
@@ -15,7 +16,7 @@ public interface ContactService {
 
     void deleteContact(Long id);
 
-    Page<ContactResponseDto> getAllContacts(int page, int size, String sortField, String sortDirection,
-                                            String contactType, String contactValue, Long userId, Integer priority);
+    Page<ContactResponseDto> getAllContacts(Pageable pageable, String contactType, String contactValue,
+                                            Long userId, Integer priority);
 
 }
