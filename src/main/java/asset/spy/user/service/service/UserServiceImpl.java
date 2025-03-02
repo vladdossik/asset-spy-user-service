@@ -76,8 +76,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponseDto> getAllUsers(Pageable pageable,
-                                             String username, String description, OffsetDateTime fromDate, OffsetDateTime toDate) {
+    public Page<UserResponseDto> getAllUsers(Pageable pageable, String username, String description,
+                                             OffsetDateTime fromDate, OffsetDateTime toDate) {
         log.info("Retrieving all users: {}", username);
 
         SortingUtil.validateSortField(pageable, ALLOWED_USER_SORT_FIELDS);
