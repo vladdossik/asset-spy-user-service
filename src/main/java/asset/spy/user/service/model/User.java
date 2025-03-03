@@ -17,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -28,6 +29,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "external_id", unique = true, nullable = false, updatable = false)
+    private UUID externalId;
 
     @Column(name = "username", nullable = false, length = 50, unique = true)
     private String username;

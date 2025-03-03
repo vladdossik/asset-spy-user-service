@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,17 +49,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDto getUserById(Long id) {
-        log.info("Retrieving user by id: {}", id);
-        User user = getUserOrThrow(id);
+    public UserResponseDto getUserById(UUID externalId) {
+        log.info("Retrieving user by id: {}", externalId);
+        User user = getUserOrThrow(externalId);
         return userMapper.toDto(user);
     }
 
     @Override
     @Transactional
-    public UserResponseDto updateUser(Long id, UserUpdateDto userUpdateDto) {
+    public UserResponseDto updateUser(UUID externalId, UserUpdateDto userUpdateDto) {
         log.info("Updating user: {}", userUpdateDto);
-        User existingUser = getUserOrThrow(id);
+        User existingUser = getUserOrThrow(externalId);
         userMapper.updateUserFromDto(userUpdateDto, existingUser);
         User savedUser = userRepository.save(existingUser);
         log.info("Updated user: {}", savedUser);
@@ -67,11 +68,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(Long id) {
-        log.info("Deleting user: {}", id);
-        User user = getUserOrThrow(id);
+    public void deleteUser(UUID externalId) {
+        log.info("Deleting user: {}", externalId);
+        User user = getUserOrThrow(externalId);
         userRepository.delete(user);
-        log.info("User with id: {} deleted", id);
+        log.info("User with id: {} deleted", externalId);
     }
 
     @Override
@@ -88,8 +89,8 @@ public class UserServiceImpl implements UserService {
         return userPage.map(userMapper::toDto);
     }
 
-    private User getUserOrThrow(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+    private User getUserOrThrow(UUID externalId) {
+        return userRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + externalId + " not found"));
     }
 }

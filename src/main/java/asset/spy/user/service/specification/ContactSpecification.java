@@ -34,8 +34,8 @@ public class ContactSpecification {
             if (userId == null) {
                 return null;
             }
-            Join<Contact, User> join = root.join("contacts", JoinType.INNER);
-            return cb.equal(join.get("userId"), userId);
+            Join<Contact, User> join = root.join("user", JoinType.INNER);
+            return cb.equal(join.get("id"), userId);
         };
     }
 

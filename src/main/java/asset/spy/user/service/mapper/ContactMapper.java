@@ -12,6 +12,7 @@ import org.mapstruct.MappingTarget;
 public interface ContactMapper {
 
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "externalId", expression = "java(java.util.UUID.randomUUID())")
     Contact toEntity(ContactCreateDto contactCreateDto);
 
     @Mapping(source = "user.id", target = "userId")

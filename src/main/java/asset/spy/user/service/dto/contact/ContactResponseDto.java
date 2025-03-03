@@ -2,9 +2,11 @@ package asset.spy.user.service.dto.contact;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class ContactResponseDto {
-    private Long id;
+    private UUID externalId;
     private Long userId;
     private String contactType;
     private String contactValue;

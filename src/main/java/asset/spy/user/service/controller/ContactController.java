@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -36,21 +38,21 @@ public class ContactController {
         return contactService.createContact(contactCreateDto, userId);
     }
 
-    @GetMapping("/{id}")
-    public ContactResponseDto getContactById(@PathVariable Long id) {
-        return contactService.getContactById(id);
+    @GetMapping("/{externalId}")
+    public ContactResponseDto getContactById(@PathVariable UUID externalId) {
+        return contactService.getContactByExternalId(externalId);
     }
 
-    @PutMapping("/{id}")
-    public ContactResponseDto updateContact(@PathVariable Long id,
+    @PutMapping("/{externalId}")
+    public ContactResponseDto updateContact(@PathVariable UUID externalId,
                                             @Valid @RequestBody ContactUpdateDto contactUpdateDto) {
-        return contactService.updateContact(id, contactUpdateDto);
+        return contactService.updateContact(externalId, contactUpdateDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteContact(@PathVariable Long id) {
-        contactService.deleteContact(id);
+    public void deleteContact(@PathVariable UUID externalId) {
+        contactService.deleteContact(externalId);
     }
 
     @GetMapping

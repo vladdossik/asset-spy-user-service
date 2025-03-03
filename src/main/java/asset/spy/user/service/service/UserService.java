@@ -7,16 +7,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 public interface UserService {
 
     UserResponseDto createUser(UserCreateDto userCreateDto);
 
-    UserResponseDto getUserById(Long id);
+    UserResponseDto getUserById(UUID externalId);
 
-    UserResponseDto updateUser(Long id, UserUpdateDto userUpdateDto);
+    UserResponseDto updateUser(UUID externalID, UserUpdateDto userUpdateDto);
 
-    void deleteUser(Long id);
+    void deleteUser(UUID externalId);
 
     Page<UserResponseDto> getAllUsers(Pageable pageable, String username,
                                       String description, OffsetDateTime fromDate, OffsetDateTime toDate);

@@ -6,15 +6,17 @@ import asset.spy.user.service.dto.contact.ContactUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 public interface ContactService {
 
     ContactResponseDto createContact(ContactCreateDto contactCreateDto, Long userId);
 
-    ContactResponseDto getContactById(long id);
+    ContactResponseDto getContactByExternalId(UUID externalId);
 
-    ContactResponseDto updateContact(Long id, ContactUpdateDto contactUpdateDto);
+    ContactResponseDto updateContact(UUID externalId, ContactUpdateDto contactUpdateDto);
 
-    void deleteContact(Long id);
+    void deleteContact(UUID externalId);
 
     Page<ContactResponseDto> getAllContacts(Pageable pageable, String contactType, String contactValue,
                                             Long userId, Integer priority);
