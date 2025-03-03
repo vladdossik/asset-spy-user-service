@@ -22,7 +22,7 @@ public class ContactSpecification {
     public static Specification<Contact> hasContactValue(String contactValue) {
         return (root, query, cb) -> {
 
-            if (StringUtils.isNotEmpty(contactValue)) {
+            if (StringUtils.isEmpty(contactValue)) {
                 return null;
             }
             return cb.like(cb.lower(root.get("contactValue")), "%" + contactValue.toLowerCase() + "%");
