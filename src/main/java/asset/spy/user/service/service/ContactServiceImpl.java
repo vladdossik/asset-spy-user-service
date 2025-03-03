@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,17 +31,16 @@ public class ContactServiceImpl implements ContactService {
     private static final List<String> ALLOWED_CONTACT_SORT_FIELDS = List.of(
             "id",
             "contactType",
-            "priority",
-            "user.id");
+            "priority");
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final ContactMapper contactMapper;
 
     @Override
     @Transactional
-    public ContactResponseDto createContact(ContactCreateDto contactCreateDto, Long userId) {
+    public ContactResponseDto createContact(ContactCreateDto contactCreateDto, UUID userExternalId) {
         log.info("Creating contact {}", contactCreateDto);
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findByExternalId(userExternalId).orElseThrow(() -> new UserNotFoundException("User not found"));
         Contact contact = contactMapper.toEntity(contactCreateDto);
         contact.setUser(user);
         contactRepository.save(contact);
@@ -50,17 +50,17 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public ContactResponseDto getContactById(long id) {
-        log.info("Getting contact {}", id);
-        Contact contact = getContactOrThrow(id);
+    public ContactResponseDto getContactByExternalId(UUID externalId) {
+        log.info("Getting contact {}", externalId);
+        Contact contact = getContactOrThrow(externalId);
         return contactMapper.toDto(contact);
     }
 
     @Override
     @Transactional
-    public ContactResponseDto updateContact(Long id, ContactUpdateDto contactUpdateDto) {
-        log.info("Updating contact {}", id);
-        Contact existingContact = getContactOrThrow(id);
+    public ContactResponseDto updateContact(UUID externalId, ContactUpdateDto contactUpdateDto) {
+        log.info("Updating contact {}", externalId);
+        Contact existingContact = getContactOrThrow(externalId);
         contactMapper.updateContactFromDto(contactUpdateDto, existingContact);
         Contact updatedContact = contactRepository.save(existingContact);
         log.info("Contact updated {}", updatedContact);
@@ -69,9 +69,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public void deleteContact(Long id) {
-        log.info("Deleting contact {}", id);
-        Contact contact = getContactOrThrow(id);
+    public void deleteContact(UUID externalId) {
+        log.info("Deleting contact {}", externalId);
+        Contact contact = getContactOrThrow(externalId);
         contactRepository.delete(contact);
         log.info("Contact deleted {}", contact);
     }
@@ -79,19 +79,18 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional(readOnly = true)
     public Page<ContactResponseDto> getAllContacts(Pageable pageable,
-                                                   String contactType, String contactValue,
-                                                   Long userId, Integer priority) {
+                                                   String contactType, String contactValue, Integer priority) {
         log.info("Getting all contacts");
         SortingUtil.validateSortField(pageable, ALLOWED_CONTACT_SORT_FIELDS);
 
         Specification<Contact> specification = ContactSpecification.initSpecificationWithFilters(contactType,
-                contactValue, userId, priority);
+                contactValue, priority);
         Page<Contact> contactPage = contactRepository.findAll(specification, pageable);
         return contactPage.map(contactMapper::toDto);
     }
 
-    private Contact getContactOrThrow(Long id) {
-        return contactRepository.findById(id)
+    private Contact getContactOrThrow(UUID externalId) {
+        return contactRepository.findByExternalId(externalId)
                 .orElseThrow(() -> new ContactNotFoundException("This contact does not exist"));
     }
 }

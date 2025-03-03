@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,21 +38,20 @@ public class UserController {
         return userService.createUser(userCreateDto);
     }
 
-    @GetMapping("/{id}")
-    public UserResponseDto getUserById(@PathVariable Long id) {
-
-        return userService.getUserById(id);
+    @GetMapping("/{externalId}")
+    public UserResponseDto getUserById(@PathVariable UUID externalId) {
+        return userService.getUserById(externalId);
     }
 
-    @PutMapping("/{id}")
-    public UserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDto userUpdateDto) {
-        return userService.updateUser(id, userUpdateDto);
+    @PutMapping("/{externalId}")
+    public UserResponseDto updateUser(@PathVariable UUID externalId, @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        return userService.updateUser(externalId, userUpdateDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public void deleteUser(@PathVariable UUID externalId) {
+        userService.deleteUser(externalId);
     }
 
     @GetMapping

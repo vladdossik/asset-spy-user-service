@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -29,37 +31,36 @@ public class ContactController {
 
     private final ContactService contactService;
 
-    @PostMapping("/save/{userId}")
+    @PostMapping("/save/{userExternalId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ContactResponseDto createContact(@PathVariable Long userId,
+    public ContactResponseDto createContact(@PathVariable UUID userExternalId,
                                             @Valid @RequestBody ContactCreateDto contactCreateDto) {
-        return contactService.createContact(contactCreateDto, userId);
+        return contactService.createContact(contactCreateDto, userExternalId);
     }
 
-    @GetMapping("/{id}")
-    public ContactResponseDto getContactById(@PathVariable Long id) {
-        return contactService.getContactById(id);
+    @GetMapping("/{externalId}")
+    public ContactResponseDto getContactById(@PathVariable UUID externalId) {
+        return contactService.getContactByExternalId(externalId);
     }
 
-    @PutMapping("/{id}")
-    public ContactResponseDto updateContact(@PathVariable Long id,
+    @PutMapping("/{externalId}")
+    public ContactResponseDto updateContact(@PathVariable UUID externalId,
                                             @Valid @RequestBody ContactUpdateDto contactUpdateDto) {
-        return contactService.updateContact(id, contactUpdateDto);
+        return contactService.updateContact(externalId, contactUpdateDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteContact(@PathVariable Long id) {
-        contactService.deleteContact(id);
+    public void deleteContact(@PathVariable UUID externalId) {
+        contactService.deleteContact(externalId);
     }
 
     @GetMapping
     public Page<ContactResponseDto> getAllContacts(Pageable pageable,
                                                    @RequestParam(required = false) String contactType,
                                                    @RequestParam(required = false) String contactValue,
-                                                   @RequestParam(required = false) Long userId,
                                                    @RequestParam(required = false) Integer priority) {
         return contactService.getAllContacts(pageable,
-                contactType, contactValue, userId, priority);
+                contactType, contactValue, priority);
     }
 }

@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03.03.2025_01
+      author: nastasiia227@gmail.com
+      comment: Added external Id column
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: external_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+                  defaultValue: gen_random_uuid()
