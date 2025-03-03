@@ -31,17 +31,16 @@ public class ContactServiceImpl implements ContactService {
     private static final List<String> ALLOWED_CONTACT_SORT_FIELDS = List.of(
             "id",
             "contactType",
-            "priority",
-            "user.id");
+            "priority");
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final ContactMapper contactMapper;
 
     @Override
     @Transactional
-    public ContactResponseDto createContact(ContactCreateDto contactCreateDto, Long userId) {
+    public ContactResponseDto createContact(ContactCreateDto contactCreateDto, UUID userExternalId) {
         log.info("Creating contact {}", contactCreateDto);
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findByExternalId(userExternalId).orElseThrow(() -> new UserNotFoundException("User not found"));
         Contact contact = contactMapper.toEntity(contactCreateDto);
         contact.setUser(user);
         contactRepository.save(contact);
@@ -80,13 +79,12 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional(readOnly = true)
     public Page<ContactResponseDto> getAllContacts(Pageable pageable,
-                                                   String contactType, String contactValue,
-                                                   Long userId, Integer priority) {
+                                                   String contactType, String contactValue, Integer priority) {
         log.info("Getting all contacts");
         SortingUtil.validateSortField(pageable, ALLOWED_CONTACT_SORT_FIELDS);
 
         Specification<Contact> specification = ContactSpecification.initSpecificationWithFilters(contactType,
-                contactValue, userId, priority);
+                contactValue, priority);
         Page<Contact> contactPage = contactRepository.findAll(specification, pageable);
         return contactPage.map(contactMapper::toDto);
     }

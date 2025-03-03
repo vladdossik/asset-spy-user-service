@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface ContactService {
 
-    ContactResponseDto createContact(ContactCreateDto contactCreateDto, Long userId);
+    ContactResponseDto createContact(ContactCreateDto contactCreateDto, UUID userId);
 
     ContactResponseDto getContactByExternalId(UUID externalId);
 
@@ -18,7 +18,6 @@ public interface ContactService {
 
     void deleteContact(UUID externalId);
 
-    Page<ContactResponseDto> getAllContacts(Pageable pageable, String contactType, String contactValue,
-                                            Long userId, Integer priority);
-
+    Page<ContactResponseDto> getAllContacts(Pageable pageable, String contactType,
+                                            String contactValue, Integer priority);
 }

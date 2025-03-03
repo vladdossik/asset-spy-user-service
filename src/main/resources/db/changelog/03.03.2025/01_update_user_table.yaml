@@ -13,4 +13,4 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
-                  defaultValue: uuid_generate_v4()
+                  defaultValue: gen_random_uuid()

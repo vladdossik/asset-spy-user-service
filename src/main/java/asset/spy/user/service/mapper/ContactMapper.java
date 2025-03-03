@@ -15,7 +15,7 @@ public interface ContactMapper {
     @Mapping(target = "externalId", expression = "java(java.util.UUID.randomUUID())")
     Contact toEntity(ContactCreateDto contactCreateDto);
 
-    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.externalId", target = "userExternalId")
     ContactResponseDto toDto(Contact contact);
 
     @Mapping(target = "user", ignore = true)

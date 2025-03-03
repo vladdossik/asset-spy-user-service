@@ -31,11 +31,11 @@ public class ContactController {
 
     private final ContactService contactService;
 
-    @PostMapping("/save/{userId}")
+    @PostMapping("/save/{userExternalId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ContactResponseDto createContact(@PathVariable Long userId,
+    public ContactResponseDto createContact(@PathVariable UUID userExternalId,
                                             @Valid @RequestBody ContactCreateDto contactCreateDto) {
-        return contactService.createContact(contactCreateDto, userId);
+        return contactService.createContact(contactCreateDto, userExternalId);
     }
 
     @GetMapping("/{externalId}")
@@ -59,9 +59,8 @@ public class ContactController {
     public Page<ContactResponseDto> getAllContacts(Pageable pageable,
                                                    @RequestParam(required = false) String contactType,
                                                    @RequestParam(required = false) String contactValue,
-                                                   @RequestParam(required = false) Long userId,
                                                    @RequestParam(required = false) Integer priority) {
         return contactService.getAllContacts(pageable,
-                contactType, contactValue, userId, priority);
+                contactType, contactValue, priority);
     }
 }

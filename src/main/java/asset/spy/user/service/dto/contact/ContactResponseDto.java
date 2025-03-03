@@ -7,7 +7,7 @@ import java.util.UUID;
 @Data
 public class ContactResponseDto {
     private UUID externalId;
-    private Long userId;
+    private UUID userExternalId;
     private String contactType;
     private String contactValue;
     private Integer priority;
