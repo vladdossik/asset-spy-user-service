@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import java.util.UUID;
 @Slf4j
 public class UserController {
 
+    private static final String HAS_ACCESS_TO_USER = "@permissionAccessService.hasAccessToUser(#externalId)";
     private final UserService userService;
 
     @PostMapping
@@ -39,22 +41,26 @@ public class UserController {
     }
 
     @GetMapping("/{externalId}")
+    @PreAuthorize(HAS_ACCESS_TO_USER)
     public UserResponseDto getUserById(@PathVariable UUID externalId) {
         return userService.getUserById(externalId);
     }
 
     @PutMapping("/{externalId}")
+    @PreAuthorize(HAS_ACCESS_TO_USER)
     public UserResponseDto updateUser(@PathVariable UUID externalId, @Valid @RequestBody UserUpdateDto userUpdateDto) {
         return userService.updateUser(externalId, userUpdateDto);
     }
 
     @DeleteMapping("/{externalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize(HAS_ACCESS_TO_USER)
     public void deleteUser(@PathVariable UUID externalId) {
         userService.deleteUser(externalId);
     }
 
     @GetMapping
+    @PreAuthorize(HAS_ACCESS_TO_USER)
     public Page<UserResponseDto> getAllUsers(Pageable pageable,
                                              @RequestParam(required = false) String username,
                                              @RequestParam(required = false) String description,

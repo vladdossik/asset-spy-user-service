@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpecificationExecutor<Contact> {
     Optional<Contact> findByExternalId(UUID externalId);
+    boolean existsByExternalIdAndUserExternalId(UUID externalId, UUID userExternalId);
 }

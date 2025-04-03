@@ -1,9 +1,9 @@
 server:
-  port: 8081
+  port: 8082
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/asset-spy-db
+    url: jdbc:postgresql://localhost:5432/asset_spy_db
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
@@ -20,3 +20,7 @@ spring:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     default-schema: asset_spy_user_service_db
+
+security:
+  jwt:
+    secret: 38ddfeac16e316426825dd93e41cb1cb2b248002d4843251ec7bbefebf6bed9194a8fb5ef3a6bcb1189ad1c7b828ee27cb219e405bf8eb17175264df100d1c253ac3aa5bac0de55575284f3d0c9ea0bddbe8170e4f7b47f2f795dc20a94dd1593b9f058f668469e899703ea106b832e60cfcf7018396e8d637930e57665f15276f82c23b29c9277ad30526acc294697d387a1239572c66b2d65c4e61df67a02a46ca9edd4d4de3519aba41e23ae19d622ecf38ddbe2a6a7fbf80ebafcdf91def546db3d90e706ca3048a9dcf754fb77c19769dfb86021f0064fcd8ca0ed790eb8e53942cb63e03d7f01164897c45d2ad3faca9e1c5ae5c0f22b94b23a1182f4f
