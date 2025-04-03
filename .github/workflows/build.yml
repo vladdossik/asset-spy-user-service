@@ -26,5 +26,7 @@ jobs:
           distribution: 'temurin'
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+        env:
+          GITHUB_TOKEN: ${{secrets.TOKEN_FOR_PACKAGES}}
       - name: Test
         run: mvn verify
