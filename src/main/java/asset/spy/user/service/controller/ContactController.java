@@ -30,8 +30,9 @@ import java.util.UUID;
 @RequestMapping("/v1/contacts")
 public class ContactController {
 
-    private static final String HAS_ACCESS_TO_CONTACT = "@permissionAccessService.hasAccessToContact(#externalId)";
-    private static final String HAS_ACCESS_TO_USER = "@permissionAccessService.hasAccessToUser(#userExternalId)";
+    private static final String HAS_ACCESS_TO_CONTACT = "@privilegeService.hasAccessToContact(#externalId)";
+    private static final String HAS_ACCESS_TO_USER = "@privilegeService.hasAccessToUser(#userExternalId)";
+
     private final ContactService contactService;
 
     @PostMapping("/save/{userExternalId}")
@@ -63,7 +64,6 @@ public class ContactController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<ContactResponseDto> getAllContacts(Pageable pageable,
                                                    @RequestParam(required = false) String contactType,
                                                    @RequestParam(required = false) String contactValue,

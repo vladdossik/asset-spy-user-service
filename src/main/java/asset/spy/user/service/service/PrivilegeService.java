@@ -1,8 +1,9 @@
 package asset.spy.user.service.service;
 
 import asset.spy.user.service.repository.ContactRepository;
+import asset.spy.user.service.util.RequestUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class PermissionAccessService {
+public class PrivilegeService {
+
     private final ContactRepository contactRepository;
 
     public boolean hasAccessToUser(UUID userExternalId) {
@@ -35,7 +37,7 @@ public class PermissionAccessService {
     }
 
     private UUID getCurrentUserExternalId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return UUID.fromString(authentication.getName());
+        HttpServletRequest request = RequestUtil.getCurrentHttpRequest();
+        return RequestUtil.extractExternalId(request);
     }
 }

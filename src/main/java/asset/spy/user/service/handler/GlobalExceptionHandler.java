@@ -1,8 +1,5 @@
 package asset.spy.user.service.handler;
 
-import asset.spy.auth.lib.exception.InvalidJwtException;
-import asset.spy.auth.lib.exception.TokenExpiredException;
-import asset.spy.auth.lib.exception.UnauthorizedException;
 import asset.spy.user.service.dto.ValidationErrorDto;
 import asset.spy.user.service.exception.ContactNotFoundException;
 import asset.spy.user.service.exception.UserAlreadyExistsException;
@@ -65,23 +62,5 @@ public class GlobalExceptionHandler {
             log.error("Data integrity violation: {}", ex.getMessage(), ex);
         }
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<String> handleTokenExpiredException(TokenExpiredException ex) {
-        log.error("Token expired: {}", ex.getMessage(), ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(InvalidJwtException.class)
-    public ResponseEntity<String> handleInvalidJwtException(InvalidJwtException ex) {
-        log.error("Invalid jwt: {}", ex.getMessage(), ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
-        log.error("Unauthorized: {}", ex.getMessage(), ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }
