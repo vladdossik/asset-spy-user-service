@@ -85,9 +85,9 @@
             <version>0.8.12</version>
         </dependency>
         <dependency>
-            <groupId>asset.spy</groupId>
-            <artifactId>auth-lib</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.github.Nastss6tx5</groupId>
+            <artifactId>asset-spy-auth-lib</artifactId>
+            <version>v1.0.0</version>
         </dependency>
     </dependencies>
 
