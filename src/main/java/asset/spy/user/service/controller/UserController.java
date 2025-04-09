@@ -1,9 +1,10 @@
 package asset.spy.user.service.controller;
 
-import asset.spy.user.service.dto.user.UserCreateDto;
 import asset.spy.user.service.dto.user.UserResponseDto;
 import asset.spy.user.service.dto.user.UserUpdateDto;
 import asset.spy.user.service.service.UserService;
+import asset.spy.user.service.util.RequestUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,12 +31,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto createUser(@Valid @RequestBody UserCreateDto userCreateDto) {
-        return userService.createUser(userCreateDto);
-    }
 
     @GetMapping("/{externalId}")
     public UserResponseDto getUserById(@PathVariable UUID externalId) {
@@ -61,5 +55,10 @@ public class UserController {
                                              @RequestParam(required = false) OffsetDateTime dateFrom,
                                              @RequestParam(required = false) OffsetDateTime dateTo) {
         return userService.getAllUsers(pageable, username, description, dateFrom, dateTo);
+    }
+
+    @GetMapping("/profile")
+    public UserResponseDto getUserProfile(HttpServletRequest request) {
+        return userService.getUserById(RequestUtil.extractExternalId(request));
     }
 }
