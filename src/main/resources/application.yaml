@@ -15,11 +15,21 @@ spring:
       hibernate:
         default_schema: asset_spy_user_service_db
         format_sql: true
-
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     default-schema: asset_spy_user_service_db
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+      key-prefix: "cache:"
+      use-key-prefix: true
 
 security:
   jwt:
