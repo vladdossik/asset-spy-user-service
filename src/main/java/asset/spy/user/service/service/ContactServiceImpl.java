@@ -1,6 +1,6 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.cache.model.CacheNames;
+import asset.spy.user.service.cache.model.CacheName;
 import asset.spy.user.service.dto.contact.ContactCreateDto;
 import asset.spy.user.service.dto.contact.ContactResponseDto;
 import asset.spy.user.service.dto.contact.ContactUpdateDto;
@@ -31,7 +31,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@CacheConfig(cacheNames = CacheNames.CONTACT)
+@CacheConfig(cacheNames = CacheName.CONTACT)
 public class ContactServiceImpl implements ContactService {
 
     private static final List<String> ALLOWED_CONTACT_SORT_FIELDS = List.of(

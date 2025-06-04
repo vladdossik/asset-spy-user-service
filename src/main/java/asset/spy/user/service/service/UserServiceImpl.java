@@ -1,6 +1,6 @@
 package asset.spy.user.service.service;
 
-import asset.spy.user.service.cache.model.CacheNames;
+import asset.spy.user.service.cache.model.CacheName;
 import asset.spy.user.service.dto.user.UserCreateDto;
 import asset.spy.user.service.dto.user.UserResponseDto;
 import asset.spy.user.service.dto.user.UserUpdateDto;
@@ -17,7 +17,6 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +31,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@CacheConfig(cacheNames = CacheNames.USER)
+@CacheConfig(cacheNames = CacheName.USER)
 public class UserServiceImpl implements UserService {
     public static final List<String> ALLOWED_USER_SORT_FIELDS = List.of("id",
             "username",
@@ -77,10 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = CacheNames.USER, key = "#externalId"),
-            @CacheEvict(value = CacheNames.CONTACT, allEntries = true, key = "#externalId + '_contact'")
-    })
+    @CacheEvict(value = CacheName.USER, key = "#externalId")
     public void deleteUser(UUID externalId) {
         log.info("Deleting user: {}", externalId);
         User user = getUserOrThrow(externalId);

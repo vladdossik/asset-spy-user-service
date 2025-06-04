@@ -1,11 +1,12 @@
 package asset.spy.user.service.cache.config;
 
-import asset.spy.user.service.cache.model.CacheNames;
+import asset.spy.user.service.cache.model.CacheName;
 import asset.spy.user.service.dto.contact.ContactResponseDto;
 import asset.spy.user.service.dto.user.UserResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -15,11 +16,17 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 public class CacheConfig {
+
+    @Value("${cache.user.ttl}")
+    private long userTt;
+    @Value("${cache.user.ttl}")
+    private long contactTt;
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
@@ -28,8 +35,8 @@ public class CacheConfig {
 
         Map<String, RedisCacheConfiguration> configurationMap = new HashMap<>();
 
-        configurationMap.put(CacheNames.USER, createCacheConfig(userSerializer));
-        configurationMap.put(CacheNames.CONTACT, createCacheConfig(contactSerializer));
+        configurationMap.put(CacheName.USER, createCacheConfig(userSerializer, userTt));
+        configurationMap.put(CacheName.CONTACT, createCacheConfig(contactSerializer, contactTt));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig())
@@ -56,8 +63,9 @@ public class CacheConfig {
         return new Jackson2JsonRedisSerializer<>(objectMapper, ContactResponseDto.class);
     }
 
-    private RedisCacheConfiguration createCacheConfig(RedisSerializer<?> serializer) {
+    private RedisCacheConfiguration createCacheConfig(RedisSerializer<?> serializer, long ttl) {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
+                .entryTtl(Duration.ofDays(ttl));
     }
 }
