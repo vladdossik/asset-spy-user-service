@@ -24,9 +24,9 @@ import java.util.Map;
 public class CacheConfig {
 
     @Value("${cache.user.ttl}")
-    private long userTt;
-    @Value("${cache.user.ttl}")
-    private long contactTt;
+    private long userTtl;
+    @Value("${cache.contact.ttl}")
+    private long contactTtl;
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
@@ -35,8 +35,8 @@ public class CacheConfig {
 
         Map<String, RedisCacheConfiguration> configurationMap = new HashMap<>();
 
-        configurationMap.put(CacheName.USER, createCacheConfig(userSerializer, userTt));
-        configurationMap.put(CacheName.CONTACT, createCacheConfig(contactSerializer, contactTt));
+        configurationMap.put(CacheName.USER, createCacheConfig(userSerializer, userTtl));
+        configurationMap.put(CacheName.CONTACT, createCacheConfig(contactSerializer, contactTtl));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig())
@@ -49,7 +49,6 @@ public class CacheConfig {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
         return mapper;
     }
 
@@ -66,6 +65,7 @@ public class CacheConfig {
     private RedisCacheConfiguration createCacheConfig(RedisSerializer<?> serializer, long ttl) {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
-                .entryTtl(Duration.ofDays(ttl));
+                .entryTtl(Duration.ofDays(ttl))
+                .disableCachingNullValues();
     }
 }

@@ -1,0 +1,73 @@
+  services:
+    postgres:
+      image: postgres:latest
+      container_name: user-service-db
+      environment:
+        POSTGRES_DB: asset_spy_user_service_db
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: 123
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      networks:
+        - user-network
+
+    pgadmin:
+      image: dpage/pgadmin4:latest
+      container_name: user-service-pgadmin
+      environment:
+        PGADMIN_DEFAULT_EMAIL: pgadmin@userservice.com
+        PGADMIN_DEFAULT_PASSWORD: userservice123
+      ports:
+       - "5050:80"
+      volumes:
+        - pgadmin_data:/var/lib/pgadmin
+      depends_on:
+      - postgres
+      networks:
+       - user-network
+
+
+    redis:
+      image: redis:latest
+      container_name: user-service-redis
+      ports:
+        - "6379:6379"
+      networks:
+        - user-network
+      healthcheck:
+        test: [ "CMD", "redis-cli", "ping" ]
+        interval: 5s
+        timeout: 3s
+        retries: 5
+
+    user-service:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: user-service
+      ports:
+        - "8082:8082"
+      depends_on:
+        postgres:
+          condition: service_started
+        redis:
+          condition: service_healthy
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/asset_spy_user_service_db
+        SPRING_DATASOURCE_USERNAME: postgres
+        SPRING_DATASOURCE_PASSWORD: 123
+        REDIS_HOST: redis
+        REDIS_PORT: 6379
+        SPRING_PROFILES_ACTIVE: docker
+      networks:
+        - user-network
+
+  volumes:
+    postgres_data:
+    pgadmin_data:
+
+  networks:
+    user-network:
+      driver: bridge

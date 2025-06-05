@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/asset_spy_db
+    url: jdbc:postgresql://localhost:5432/asset_spy_user_service_db
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
@@ -19,6 +19,11 @@ spring:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     default-schema: asset_spy_user_service_db
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
   cache:
     type: redis

@@ -1,23 +1,17 @@
 services:
-  redis:
-    image: redis:latest
-    container_name: user-service-redis
-    ports:
-      - "6379:6379"
-    networks:
-      - user-network
-
   user-service:
-    image: user-service
+    build:
+      dockerfile: Dockerfile
     container_name: user-service
     ports:
       - "8082:8082"
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - SPRING_PROFILES_ACTIVE=default
-    depends_on:
-      - redis
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/asset_spy_user_service_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      SPRING_PROFILES_ACTIVE: local
     networks:
       - user-network
 

@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 00.00.2025_01
+      author: Nastasiia227@gmail.com
+      comment: Create application schema if not exists
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM information_schema.schemata WHERE schema_name = 'asset_spy_user_service_db'
+      changes:
+        - sql:
+            sql:
+              CREATE SCHEMA IF NOT EXISTS asset_spy_user_service_db;
+      rollback:
+        - sql:
+            sql: DROP SCHEMA IF EXISTS asset_spy_user_service_db CASCADE;
