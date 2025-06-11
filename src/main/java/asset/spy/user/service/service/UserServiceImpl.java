@@ -1,5 +1,6 @@
 package asset.spy.user.service.service;
 
+import asset.spy.user.service.cache.model.CacheName;
 import asset.spy.user.service.dto.user.UserCreateDto;
 import asset.spy.user.service.dto.user.UserResponseDto;
 import asset.spy.user.service.dto.user.UserUpdateDto;
@@ -12,6 +13,10 @@ import asset.spy.user.service.specification.UserSpecification;
 import asset.spy.user.service.util.SortingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +31,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@CacheConfig(cacheNames = CacheName.USER)
 public class UserServiceImpl implements UserService {
     public static final List<String> ALLOWED_USER_SORT_FIELDS = List.of("id",
             "username",
@@ -49,6 +55,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(key = "#externalId")
     public UserResponseDto getUserById(UUID externalId) {
         log.info("Retrieving user by id: {}", externalId);
         User user = getUserOrThrow(externalId);
@@ -57,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CachePut(key = "#externalId")
     public UserResponseDto updateUser(UUID externalId, UserUpdateDto userUpdateDto) {
         log.info("Updating user: {}", userUpdateDto);
         User existingUser = getUserOrThrow(externalId);
@@ -68,6 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheName.USER, key = "#externalId")
     public void deleteUser(UUID externalId) {
         log.info("Deleting user: {}", externalId);
         User user = getUserOrThrow(externalId);

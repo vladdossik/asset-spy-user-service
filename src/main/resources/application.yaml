@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/asset_spy_db
+    url: jdbc:postgresql://localhost:5432/asset_spy_user_service_db
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
@@ -15,11 +15,28 @@ spring:
       hibernate:
         default_schema: asset_spy_user_service_db
         format_sql: true
-
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     default-schema: asset_spy_user_service_db
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      key-prefix: "cache:"
+      use-key-prefix: true
+
+cache:
+  user:
+    ttl: 7200000
+  contact:
+    ttl: 3600000
 
 security:
   jwt:

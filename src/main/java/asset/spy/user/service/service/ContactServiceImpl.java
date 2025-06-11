@@ -1,5 +1,6 @@
 package asset.spy.user.service.service;
 
+import asset.spy.user.service.cache.model.CacheName;
 import asset.spy.user.service.dto.contact.ContactCreateDto;
 import asset.spy.user.service.dto.contact.ContactResponseDto;
 import asset.spy.user.service.dto.contact.ContactUpdateDto;
@@ -14,6 +15,10 @@ import asset.spy.user.service.specification.ContactSpecification;
 import asset.spy.user.service.util.SortingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,6 +31,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@CacheConfig(cacheNames = CacheName.CONTACT)
 public class ContactServiceImpl implements ContactService {
 
     private static final List<String> ALLOWED_CONTACT_SORT_FIELDS = List.of(
@@ -50,6 +56,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(key = "#externalId")
     public ContactResponseDto getContactByExternalId(UUID externalId) {
         log.info("Getting contact {}", externalId);
         Contact contact = getContactOrThrow(externalId);
@@ -58,6 +65,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
+    @CachePut(key = "#externalId")
     public ContactResponseDto updateContact(UUID externalId, ContactUpdateDto contactUpdateDto) {
         log.info("Updating contact {}", externalId);
         Contact existingContact = getContactOrThrow(externalId);
@@ -69,6 +77,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
+    @CacheEvict(key = "#externalId")
     public void deleteContact(UUID externalId) {
         log.info("Deleting contact {}", externalId);
         Contact contact = getContactOrThrow(externalId);
